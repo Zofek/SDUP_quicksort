@@ -1,11 +1,11 @@
 ## Lomuto partition scheme
 
 #--------------------------------------------
-def quicksort(arr_in, lo, hi,):
+def quicksort(arr_in, lo, hi):
     print("quicksort")
     # Ensure indices are in correct order
     if lo >= hi or lo < 0:
-        return
+        return #nie wykonujemy partition
     
     # Partition array and get the pivot index
     p = partition(arr_in, lo, hi) 

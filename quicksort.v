@@ -14,7 +14,7 @@ module quicksort#(
 	output wire [0:0] array_valid,
     output wire [ARR_WIDTH*4-1:0] array_out
     );
-    
+
 //--------------------------------------------    
 reg [ARR_WIDTH*4-1:0] part_arr, part_arr_nxt;
 reg curr_pivot, temp_ctr, index, 
@@ -43,7 +43,7 @@ reg [1:0] part_status, part_status_nxt;
         .index_out(index_nxt),
         .temp_ctr_out(temp_ctr_nxt)
     );
-        
+ //test comment       
 //curr_pivot <= pivot;
 // STATE MACHINE -----------------------------
  
