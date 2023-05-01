@@ -7,7 +7,7 @@ module quicksort#(
     input wire [ARR_WIDTH*4-1:0] array_in, 
     input wire clock, 
     input wire reset,
-    input wire start,
+    input wire enable,
     input wire hi_ind,
     input wire lo_ind,
 	
@@ -23,7 +23,7 @@ reg curr_pivot, temp_ctr, index,
 wire curr_pivot_nxt, temp_ctr_nxt, index_nxt;
 reg [0:0] left_vld, left_vld_nxt,
           right_vld, right_vld_nxt;
-reg [1:0] part_status, part_status_nxt;
+reg [0:0] start, start_nxt, ready;
 //--------------------------------------------
     partition #(.ARR_WIDTH(4)) my_partition
     (
@@ -33,13 +33,13 @@ reg [1:0] part_status, part_status_nxt;
         .hi_ind(hi_ind_part),
         .lo_ind(lo_ind_part),
         .curr_pivot(curr_pivot),
-        .part_status_in(part_status), //defines whether to perform partition
+        .start(start), //defines whether to perform partition
         .index_in(index),
         .temp_ctr_in(temp_ctr),
         
         .array_out(part_arr),
         .pivot(curr_pivot_nxt),
-        .part_status_out(part_status),
+        .ready(ready),
         .index_out(index_nxt),
         .temp_ctr_out(temp_ctr_nxt)
     );
@@ -63,7 +63,7 @@ reg [2:0] state, state_nxt;
         begin
         part_arr        <= {ARR_WIDTH*4{1'b0}};
         curr_pivot      <= 0;
-        part_status     <= 0;
+        start           <= 0;
         state           <= INIT;
         hi_ind_part     <= 0;
         lo_ind_part     <= 0;
@@ -79,7 +79,7 @@ reg [2:0] state, state_nxt;
         state         <= state_nxt;
         index         <= index_nxt;
         temp_ctr      <= temp_ctr_nxt;
-        part_status   <= part_status_nxt;
+        start         <= start_nxt;
 		end //end else
 	end
 	
