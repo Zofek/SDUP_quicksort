@@ -40,6 +40,7 @@ integer i_1;
 integer i_2;
 integer i_3;
 integer count = 0;
+integer count_pass = 0;
 // initial assigns 
 initial 
     begin 
@@ -66,7 +67,7 @@ initial
                     enable = 1'b1;
                     wait (valid == 1);
                     //$display("%x",array_1d_out);
-                    if (array_1d_out[15:12] <= array_1d_out[11:8] && array_1d_out[11:8]  <= array_1d_out[7:4] && array_1d_out[7:4] <= array_1d_out[3:0]) ;//$display("PASSED");
+                    if (array_1d_out[15:12] <= array_1d_out[11:8] && array_1d_out[11:8]  <= array_1d_out[7:4] && array_1d_out[7:4] <= array_1d_out[3:0]) count_pass = count_pass + 1;//$display("PASSED");
                     else 
                         begin
                         $display("%x", array_1d);
@@ -91,7 +92,8 @@ initial
     //wait (valid == 1);
     //enable = 1'b0;
     //#10;
-    $display("Count: %d", count);
+    $display("FAILED: %d", count);
+    $display("PASSED: %d", count_pass);
     $finish;
     end
 endmodule

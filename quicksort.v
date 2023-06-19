@@ -33,10 +33,11 @@ reg  [3:0] curr_pivot, curr_pivot_nxt;
         .hi_ind(hi_ind_part),
         .lo_ind(lo_ind_part),
         .start(start),
+        .pivot_ind_in(curr_pivot),
         
         .array_out(array_out),
         .part_valid(part_valid),
-        .pivot_ind(pivot_ind)
+        .pivot_ind_out(pivot_ind)
     );
 
 // STATE MACHINE -----------------------------
@@ -59,9 +60,9 @@ reg [2:0] state, state_nxt;
 	if (reset)
         begin
         sorted_array <= {ARR_WIDTH*4-1{1'b0}};
-        start     <= 1'b0;
-        state     <= INIT;
-        idle_aux  <= 1'b1;
+        start       <= 1'b0;
+        state       <= INIT;
+        idle_aux    <= 1'b1;
         array_valid <= 1'b0;
         lo_ind_part <= 4'b0;
         hi_ind_part <= 4'b0;
@@ -69,14 +70,14 @@ reg [2:0] state, state_nxt;
         end //end if
 	else 
 		begin
-        sorted_array  <= sorted_array_nxt;
-        state      <= state_nxt;
-        start      <= start_nxt;
-        idle_aux   <= idle_aux_nxt;
-        array_valid <= array_valid_nxt;
-        lo_ind_part <= lo_ind_part_nxt;
-        hi_ind_part <= hi_ind_part_nxt;
-        curr_pivot  <= curr_pivot_nxt;
+        sorted_array <= sorted_array_nxt;
+        state        <= state_nxt;
+        start        <= start_nxt;
+        idle_aux     <= idle_aux_nxt;
+        array_valid  <= array_valid_nxt;
+        lo_ind_part  <= lo_ind_part_nxt;
+        hi_ind_part  <= hi_ind_part_nxt;
+        curr_pivot   <= curr_pivot_nxt;
 		end //end else
 	end
 	
@@ -180,7 +181,7 @@ reg [2:0] state, state_nxt;
        //-------------------    
        IDLE_RIGHT: //right side of pivot
            begin
-           if (lo_ind_part >= hi_ind_part - 1 || lo_ind_part < 0 )
+           if (lo_ind_part >= hi_ind_part || lo_ind_part < 0 )
                begin
                array_valid_nxt = 1'b1;
                state_nxt = INIT;
@@ -198,6 +199,7 @@ reg [2:0] state, state_nxt;
                    start_nxt = 1'b0;
                    if (1 == part_valid)
                        begin
+                       array_valid_nxt = 1'b1;
                        state_nxt = LEFT;
                        idle_aux_nxt = 1'b1;
                        sorted_array_nxt = array_out;
