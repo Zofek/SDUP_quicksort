@@ -16,7 +16,7 @@ module quicksort#(
     );
 
 //--------------------------------------------    
-reg  [0:0] start, start_nxt, idle_aux, idle_aux_nxt, array_valid_nxt;
+reg  [0:0] start, start_nxt, idle_aux, idle_aux_nxt, left_valid_nxt, left_valid, right_valid_nxt, right_valid;
 wire [0:0] part_valid;
 wire [ARR_WIDTH*4-1:0] array_out;
 reg  [ARR_WIDTH*4-1:0] sorted_array_nxt;
@@ -66,6 +66,8 @@ reg [2:0] state, state_nxt;
         array_valid <= 1'b0;
         lo_ind_part <= 4'b0;
         hi_ind_part <= 4'b0;
+        right_valid <= 1'b0;
+        left_valid  <= 1'b0;
         curr_pivot  <= 4'b0;
         end //end if
 	else 
@@ -74,7 +76,7 @@ reg [2:0] state, state_nxt;
         state        <= state_nxt;
         start        <= start_nxt;
         idle_aux     <= idle_aux_nxt;
-        array_valid  <= array_valid_nxt;
+        array_valid  <= left_valid_nxt && right_valid_nxt;
         lo_ind_part  <= lo_ind_part_nxt;
         hi_ind_part  <= hi_ind_part_nxt;
         curr_pivot   <= curr_pivot_nxt;
@@ -93,7 +95,8 @@ reg [2:0] state, state_nxt;
         INIT:
             begin
             state_nxt       = INIT;
-            array_valid_nxt = 1'b0;
+            left_valid_nxt = 1'b0;
+            right_valid_nxt = 1'b0;
             start_nxt       = 1'b0;
             idle_aux_nxt    = 1'b1;
             sorted_array_nxt   = array_in;
@@ -107,7 +110,8 @@ reg [2:0] state, state_nxt;
            begin
            if (lo_ind_part >= hi_ind_part || lo_ind_part < 0 )
                begin
-               array_valid_nxt = 1'b1;
+               left_valid_nxt = 1'b1;
+               right_valid_nxt = 1'b1;
                state_nxt = INIT;
                end
            else
@@ -146,7 +150,6 @@ reg [2:0] state, state_nxt;
            begin
            if (lo_ind_part >= hi_ind_part || lo_ind_part < 0 )
                begin
-               //array_valid_nxt = 1'b1;
                state_nxt = RIGHT;
                end
            else
@@ -166,6 +169,7 @@ reg [2:0] state, state_nxt;
                        idle_aux_nxt = 1'b1;
                        sorted_array_nxt = array_out;
                        curr_pivot_nxt = pivot_ind;
+                       left_valid_nxt = 1'b1;
                        end
                    end
                end
@@ -183,7 +187,7 @@ reg [2:0] state, state_nxt;
            begin
            if (lo_ind_part >= hi_ind_part || lo_ind_part < 0 )
                begin
-               array_valid_nxt = 1'b1;
+               right_valid_nxt = 1'b1;
                state_nxt = INIT;
                end
            else
@@ -199,7 +203,7 @@ reg [2:0] state, state_nxt;
                    start_nxt = 1'b0;
                    if (1 == part_valid)
                        begin
-                       array_valid_nxt = 1'b1;
+                       right_valid_nxt = 1'b1;
                        state_nxt = LEFT;
                        idle_aux_nxt = 1'b1;
                        sorted_array_nxt = array_out;
@@ -210,7 +214,7 @@ reg [2:0] state, state_nxt;
            end 
     endcase
     end
-	
+
 //--------------------------------------------	
     
 endmodule //quicksort_algorithm
