@@ -5,12 +5,13 @@ module testbench;
 //-------------------------------------------------------
 parameter ARR_WIDTH = 4;
 //-------------------------------------------------------
-reg clk, rst;
-wire [0:0] valid;
-reg  [0:0] enable; 
-reg [ARR_WIDTH*4-1:0] array_1d;
+reg  clk,  rst;
+reg  [0:0]             enable; 
+reg  [3:0]             ind_hi, ind_lo;
+reg  [ARR_WIDTH*4-1:0] array_1d;
 wire [ARR_WIDTH*4-1:0] array_1d_out;
-reg  [3:0] ind_hi, ind_lo;
+wire [0:0]             valid;
+
 //-------------------------------------------------------
 quicksort #(.ARR_WIDTH(ARR_WIDTH)) myQuicksort
     (
@@ -39,7 +40,7 @@ integer i_0;
 integer i_1;
 integer i_2;
 integer i_3;
-integer count = 0;
+integer count_fail = 0;
 integer count_pass = 0;
 // initial assigns 
 initial 
@@ -67,14 +68,18 @@ initial
                     enable = 1'b1;
                     wait (valid == 1);
                     //$display("%x",array_1d_out);
-                    if (array_1d_out[15:12] <= array_1d_out[11:8] && array_1d_out[11:8]  <= array_1d_out[7:4] && array_1d_out[7:4] <= array_1d_out[3:0]) count_pass = count_pass + 1;//$display("PASSED");
+                    if (array_1d_out[15:12] <= array_1d_out[11:8] && 
+                        array_1d_out[11:8]  <= array_1d_out[7:4]  && 
+                        array_1d_out[7:4] <= array_1d_out[3:0]) 
+                        begin
+                        count_pass = count_pass + 1;
+                        end
                     else 
                         begin
                         $display("%x", array_1d);
                         $display("%x",array_1d_out);
                         $display("FAILED");
-                        count = count + 1;
-                        //$finish;
+                        count_fail = count_fail + 1;
                         end
                     enable = 1'b0;
                     #20;
@@ -82,17 +87,9 @@ initial
                 end
             end
         end
-    //array_1d[15:12] = 3'd0; //array = {1,5,0,2}
-    //array_1d[11:8]  = 3'd0;
-    //array_1d[7:4]   = 3'd1; 
-    //array_1d[3:0]   = 3'd0;
-    //ind_hi = 3;
-    //ind_lo = 0;
-    //enable = 1'b1;
-    //wait (valid == 1);
-    //enable = 1'b0;
-    //#10;
-    $display("FAILED: %d", count);
+        
+    #10;
+    $display("FAILED: %d", count_fail);
     $display("PASSED: %d", count_pass);
     $finish;
     end
